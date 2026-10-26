@@ -39,4 +39,16 @@ public class Job {
         return type;
     }
 
+    public String getPayload() {
+        return payload;
+    }
+
+    public JobStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(JobStatus status) {
+        this.status = status;
+    }
+
 }
