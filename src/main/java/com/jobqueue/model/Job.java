@@ -50,5 +50,16 @@ public class Job {
     public void setStatus(JobStatus status) {
         this.status = status;
     }
+    public void setAttempts (int attempts) {
+        this.attempts = attempts;
+    }
+
+    public int getAttempts() {
+        return attempts;
+    }
+
+    public int getMaxRetries() {
+        return maxRetries;
+    }
 
 }

@@ -59,6 +59,20 @@ public class JobWorker {
                     jedis.del("job:" + jobId);
                     System.out.println("[WORKER] Completed and deleted job: " + jobId);
                 }
+                else {
+                    job.setAttempts(job.getAttempts() + 1);
+                    if (job.getAttempts() >= job.getMaxRetries()) {
+                        job.setStatus(JobStatus.DLQ);
+                        jedis.set("job:" + job.getId(), mapper.writeValueAsString(job));
+                        jedis.rpush("queue:dlq", job.getId());
+                        System.out.println("[WORKER] Job " + jobId + " failed after max retries.");
+                    } else {
+                        job.setStatus(JobStatus.PENDING);
+                        jedis.set("job:" + job.getId(), mapper.writeValueAsString(job));
+                        jedis.rpush("queue:pending", job.getId());
+                        System.out.println("[WORKER] Job " + jobId + " failed, re-queued for retry. Attempt " + job.getAttempts() + "/" + job.getMaxRetries());
+                    }
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("[WORKER] Error processing job: " + e.getMessage());
